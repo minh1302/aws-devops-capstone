@@ -679,10 +679,10 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend:
-          context: SLACK_APP
-      # - build-backend:
+      # - build-frontend:
       #     context: SLACK_APP
+      - build-backend:
+          context: SLACK_APP
       # - test-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]
