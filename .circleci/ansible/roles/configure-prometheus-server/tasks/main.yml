@@ -1,0 +1,84 @@
+---
+
+- name: add prometheus user and forder
+  become: true
+  shell: |
+    useradd --no-create-home prometheus
+    mkdir /etc/prometheus
+    mkdir /var/lib/prometheus
+
+- name: "install prometheus"
+  unarchive:
+    src: https://github.com/prometheus/prometheus/releases/download/v2.19.0/prometheus-2.19.0.linux-amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: "move prometheus to /usr/local/bin."
+  become: true
+  copy:
+    src: /tmp/prometheus-2.19.0.linux-amd64/prometheus
+    dest: /usr/local/bin/prometheus
+    remote_src: yes
+    mode: '0777'
+
+- name: "move promtool to /usr/local/bin."
+  become: true
+  copy:
+    src: /tmp/prometheus-2.19.0.linux-amd64/promtool
+    dest: /usr/local/bin/promtool
+    remote_src: yes
+    mode: '0777'
+
+- name: "move consoles to /etc/prometheus"
+  become: true
+  copy:
+    src: /tmp/prometheus-2.19.0.linux-amd64/consoles
+    dest: /etc/prometheus
+    remote_src: yes
+    mode: '0777'
+
+- name: "move console_libraries to /etc/prometheus"
+  become: true
+  copy:
+    src: /tmp/prometheus-2.19.0.linux-amd64/console_libraries
+    dest: /etc/prometheus
+    remote_src: yes
+    mode: '0777'
+
+- name: "move promtool to /usr/local/bin/"
+  become: true
+  copy:
+    src: /tmp/prometheus-2.19.0.linux-amd64/promtool
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: '0777'
+    
+- name: "copy prometheus.yml to /etc/prometheus/"
+  become: true
+  copy:
+    src: prometheus.yml
+    dest: /etc/prometheus/
+    
+- name: "copy prometheus.service to /etc/systemd/system/"
+  become: true
+  copy:
+    src: prometheus.service
+    dest: /etc/systemd/system/
+    
+- name: change the permissions of the directories
+  become: true
+  shell: |
+    chown prometheus:prometheus /etc/prometheus
+    chown prometheus:prometheus /usr/local/bin/prometheus
+    chown prometheus:prometheus /usr/local/bin/promtool
+    chown -R prometheus:prometheus /etc/prometheus/consoles
+    chown -R prometheus:prometheus /etc/prometheus/console_libraries
+    chown -R prometheus:prometheus /var/lib/prometheus
+
+- name: "enable prometheus service"
+  become: true
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: prometheus
+    enabled: yes

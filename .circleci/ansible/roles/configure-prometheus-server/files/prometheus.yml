@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 1s
+  evaluation_interval: 1s
+  external_labels:
+    monitor: 'prometheus'
+
+rule_files:
+ - /etc/prometheus/rules.yml
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - localhost:9093
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'udapeople'
+    ec2_sd_configs:
+      - region: us-east-1
+        access_key: AKIAQ5YKJACGMN2AB6XW
+        secret_key: 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
+        port: 9100
+    static_configs:
+      - targets: ['ec2-3-226-27-6.compute-1.amazonaws.com:9100']
+

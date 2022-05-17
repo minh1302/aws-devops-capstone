@@ -1,0 +1,199 @@
+version: 2.1
+
+orbs: 
+  slack: circleci/slack@4.9.4
+commands:  
+  destroy-prometheus-environment:
+    description: Destroy prometheus cloudformation stacks.
+    steps:
+      - run:
+          name: Destroy prometheus cloudformation stacks
+          when: on_fail         
+          command: |
+            aws cloudformation delete-stack --stack-name udapeople-prometheus-server
+            
+jobs:
+
+  deploy-prometheus-infrastructure:
+    docker:
+      # Docker image here that supports AWS CLI
+      - image: amazon/aws-cli
+    steps:
+      # Checkout code from git
+      - checkout
+      - run:
+          name: install tar gzip
+          command: |
+            yum -y install tar gzip
+
+      - run:
+          name: Ensure prometheus infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/prometheus_server.yml \
+              --stack-name "udapeople-prometheus-server" \
+              --tags project=udapeople
+
+      - run:
+          name: Add prometheus ip to ansible prometheus_inventory
+          command: |
+            echo "[web]" > ~/prometheus_inventory.txt
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=udapeople-prometheus-server" \
+              --output text > ~/BACKEND_IP.txt
+
+            export BACKEND_IP=$(cat ~/BACKEND_IP.txt)
+            echo "${BACKEND_IP}" >> ~/prometheus_inventory.txt
+
+            cat ~/prometheus_inventory.txt                 
+
+      - run:
+          name: Add prometheus ip to ansible prometheus_inventory
+          command: |            
+            
+            echo "[prometheus]" > ~/prometheus_inventory.txt
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=prometheus-server" \
+              --output text > ~/PROMETHEUS_IP.txt
+
+            export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)
+            echo "${PROMETHEUS_IP}" >> ~/prometheus_inventory.txt
+
+            cat ~/prometheus_inventory.txt                 
+
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - PROMETHEUS_IP.txt
+            - prometheus_inventory.txt
+
+      # Here's where you will add some code to rollback on failure  
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1
+
+  configure-prometheus-server:
+    docker:
+      # Docker image here that supports Ansible     
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+
+      # Add ssh keys with fingerprint      
+      - add_ssh_keys:
+          fingerprints: ["45:8b:60:3b:68:26:7f:2e:f1:88:e2:35:96:1d:14:73"] 
+          # You can get this ID in the section where you registered the SSH Key
+
+      # attach workspace
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ~/
+          
+      # Install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            apk add --update tar gzip ansible nodejs npm curl
+            pip3 install --no-cache-dir awscli
+
+      - run:
+          name: Deploy prometheus server
+          command: |    
+            echo "Contents  of the ~/inventory.txt file is -------"
+            cat ~/inventory.txt
+
+            ansible-playbook -i ~/inventory.txt .circleci/ansible/deploy-backend.yml
+
+      # Remote EC2 to check backend status
+      # pm2 list
+      # pm2 logs npm
+      # sudo apt install net-tools
+      #  netstat -na | grep 3030
+      
+      # Here's where you will add some code to rollback on failure   
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
+
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1 
+
+  smoke-test-prometheus-server:
+    docker:
+      # Lightweight Docker image 
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+
+      # Install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update curl
+            pip3 install --no-cache-dir awscli
+            echo ${PWD}
+
+      - attach_workspace:
+          at: ~/
+
+      - run:
+          name: Get PROMETHEUS_IP url
+          command: |          
+            export PROMETHEUS_IP=$(cat ~/PROMETHEUS_IP.txt)      
+            echo "PROMETHEUS_IP = ${PROMETHEUS_IP}"
+            export PROMETHEUS_URL="http://${BACKEND_IP}:9090/targets"
+            echo "${PROMETHEUS_URL}" > ~/PROMETHEUS_URL.txt
+            chmod 777 ~/PROMETHEUS_URL.txt
+            cat ~/PROMETHEUS_URL.txt
+
+      - run:
+          name: PROMETHEUS smoke test.
+          command: |
+            URL=$(cat ~/PROMETHEUS_URL.txt)            
+            echo ${URL} 
+            if curl -s ${URL} | grep "Targets"
+            then
+                # Change this to 0 after the job fails
+              return 0
+            else
+              return 1
+            fi
+      # # Here's where you will add some code to rollback on failure   
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1 
+
+workflows:
+  default:
+    jobs:
+      - deploy-prometheus-infrastructure:
+          context: SLACK_APP
+          filters:
+            branches:
+              only: [prometheus-server]    
+      - configure-prometheus-server:
+          context: SLACK_APP
+          requires: [deploy-prometheus-infrastructure]
+      - smoke-test-prometheus-server:
+          context: SLACK_APP
+          requires: [configure-prometheus-server]

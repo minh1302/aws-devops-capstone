@@ -1,0 +1,55 @@
+Description: >
+  UdaPeople backend stack.
+
+Parameters:
+  WorkflowID:
+    Description: Unique identifier.
+    Type: String
+
+Resources:
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub UdaPeople-Prometheus-Server
+      GroupDescription: Allow port 22,  port 9090 for prometheus, 9100 for prometheus node exporter, 9093 for alert manager.
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 9090
+          ToPort: 9090
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 9100
+          ToPort: 9100
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 9093
+          ToPort: 9093
+          CidrIp: 0.0.0.0/0
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      SecurityGroups:
+        - Ref: InstanceSecurityGroup
+      KeyName: udapeople
+      # If you use another key pair name, you should change this value to match.
+      # If this ami id is not available for you, you can find another (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html)
+      # Ubuntu 18 or higher works fine
+      # Ubuntu 20
+      ImageId:  ami-0c4f7023847b90238 
+      Tags:
+        - Key: Name
+          Value: !Sub udapeople-prometheus-server
+
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+        InstanceId: !Ref EC2Instance
+        Tags:
+        - Key: Name
+          Value: !Sub Elastic IP for Server backend-${WorkflowID}
