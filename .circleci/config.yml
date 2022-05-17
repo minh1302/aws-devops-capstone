@@ -88,10 +88,15 @@ jobs:
       - restore_cache:
           keys: [frontend-build]
       - run:
-          name: Build front-end
+          name: lint front-end
           command: |
             cd frontend
             sudo npm install
+            sudo npm run lint
+      - run:
+          name: Build front-end
+          command: |
+            cd frontend
             sudo npm run build
       - save_cache:
           paths: [frontend/node_modules]
@@ -110,34 +115,19 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
-          name: Back-end build
-          command: |
-            cd backend
-            sudo npm install
-            sudo npm run build
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-build
-
-      - slack/notify:
-          channel: general
-          event: fail
-          template: basic_fail_1
-                
-  lint-code:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      # Checkout code from git
-      - checkout
-      # Your job code here
-            
-      - run:
-          name: npm runt lint
+          name: lint Back-end 
           command: |
             cd backend
             sudo npm install
             sudo npm run lint
+      - run:
+          name: Back-end build
+          command: |
+            cd backend
+            sudo npm run build
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-build
 
       - slack/notify:
           channel: general
@@ -689,13 +679,10 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend:
-      #     context: SLACK_APP
+      - build-frontend:
+          context: SLACK_APP
       # - build-backend:
       #     context: SLACK_APP
-      - lint-code:
-          context: SLACK_APP
-          # requires: [build-frontend]
       # - test-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]
