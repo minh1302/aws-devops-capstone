@@ -669,28 +669,25 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend:
-          context: SLACK_APP
-          filters:
-            branches:
-              only: [test]
-      - build-backend:
-          context: SLACK_APP
-      - test-frontend:
-          context: SLACK_APP
-          requires: [build-frontend]
-      - test-backend:
-          context: SLACK_APP
-          requires: [build-backend]
-      - scan-backend:
-          context: SLACK_APP
-          requires: [build-backend]
-      - scan-frontend:
-          context: SLACK_APP
-          requires: [build-frontend]
+      # - build-frontend:
+      #     context: SLACK_APP
+      # - build-backend:
+      #     context: SLACK_APP
+      # - test-frontend:
+      #     context: SLACK_APP
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     context: SLACK_APP
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     context: SLACK_APP
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     context: SLACK_APP
+      #     requires: [build-frontend]
       - deploy-infrastructure:
           context: SLACK_APP
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [master]
