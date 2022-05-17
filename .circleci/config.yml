@@ -123,29 +123,8 @@ jobs:
           channel: general
           event: fail
           template: basic_fail_1
-
-  lint-frontend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      # Checkout code from git
-      - checkout
-            
-      - run:
-          name: lint front-end
-          command: |
-            cd backend
-            sudo npm install
-            npm install eslint --save-dev
-            npm init @eslint/config
-            ./node_modules/.bin/eslint backend/
-
-      - slack/notify:
-          channel: general
-          event: fail
-          template: basic_fail_1
                 
-  lint-backend:
+  lint-code:
     docker:
       - image: circleci/node:13.8.0
     steps:
@@ -158,9 +137,7 @@ jobs:
           command: |
             cd backend
             sudo npm install
-            npm install eslint --save-dev
-            npm init @eslint/config
-            ./node_modules/.bin/eslint backend/
+            sudo npm run lint
 
       - slack/notify:
           channel: general
@@ -716,12 +693,9 @@ workflows:
       #     context: SLACK_APP
       # - build-backend:
       #     context: SLACK_APP
-      - lint-frontend:
+      - lint-code:
           context: SLACK_APP
           # requires: [build-frontend]
-      - lint-backend:
-          context: SLACK_APP
-          # requires: [build-backend]
       # - test-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]
