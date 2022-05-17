@@ -10,7 +10,7 @@
     "pretest:cov": "npm run lint",
     "test:cov": "jest --coverage",
     "start": "webpack serve --mode development --hot --progress --color --port 3000 --open",
-    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "lint": "tslint -p tsconfig.json -c tslint.json --fix",
     "build:prod": "webpack -p --progress",
     "build": "webpack --mode development --progress",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
