@@ -133,7 +133,7 @@ jobs:
       # Your job code here
             
       - run:
-          name: lint back-end
+          name: npm runt lint
           command: |
             cd backend
             sudo npm install
