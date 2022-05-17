@@ -124,6 +124,49 @@ jobs:
           event: fail
           template: basic_fail_1
 
+  lint-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      # Checkout code from git
+      - checkout
+            
+      - run:
+          name: lint front-end
+          command: |
+            cd backend
+            sudo npm install
+            npm install eslint --save-dev
+            npm init @eslint/config
+            ./node_modules/.bin/eslint backend/
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1
+                
+  lint-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      # Checkout code from git
+      - checkout
+      # Your job code here
+            
+      - run:
+          name: lint back-end
+          command: |
+            cd backend
+            sudo npm install
+            npm install eslint --save-dev
+            npm init @eslint/config
+            ./node_modules/.bin/eslint backend/
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1
+
   test-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -673,6 +716,12 @@ workflows:
       #     context: SLACK_APP
       # - build-backend:
       #     context: SLACK_APP
+      - lint-frontend:
+          context: SLACK_APP
+          # requires: [build-frontend]
+      - lint-backend:
+          context: SLACK_APP
+          # requires: [build-backend]
       # - test-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]
@@ -685,30 +734,30 @@ workflows:
       # - scan-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]
-      - deploy-infrastructure:
-          context: SLACK_APP
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          context: SLACK_APP
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          context: SLACK_APP
-          requires: [configure-infrastructure]          
-      - deploy-frontend:
-          context: SLACK_APP
-          requires: [run-migrations]
-      - deploy-backend:
-          context: SLACK_APP
-          requires: [run-migrations]
-      - smoke-test:
-          context: SLACK_APP
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          context: SLACK_APP
-          requires: [smoke-test]          
-      - cleanup:
-          context: SLACK_APP
-          requires: [cloudfront-update]
+      # - deploy-infrastructure:
+      #     context: SLACK_APP
+      #     # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
+      #     context: SLACK_APP
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     context: SLACK_APP
+      #     requires: [configure-infrastructure]          
+      # - deploy-frontend:
+      #     context: SLACK_APP
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     context: SLACK_APP
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     context: SLACK_APP
+      #     requires: [deploy-backend, deploy-frontend]
+      # - cloudfront-update:
+      #     context: SLACK_APP
+      #     requires: [smoke-test]          
+      # - cleanup:
+      #     context: SLACK_APP
+      #     requires: [cloudfront-update]
