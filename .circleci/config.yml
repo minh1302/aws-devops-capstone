@@ -453,7 +453,7 @@ jobs:
           command: |
             apk add --update docker
             apk add openrc
-            service docker restart
+            service docker status
             
             pip install --upgrade pip
             apk add --update curl
