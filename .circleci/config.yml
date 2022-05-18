@@ -451,10 +451,10 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            sudo apk update
-            sudo apk install python3-pip
+            apk update
+            apk install python3-pip
             pip install --upgrade pip
-            sudo apk add --update curl
+            apk add --update curl
             pip3 install --no-cache-dir awscli
             
             # Install hadolint
