@@ -534,12 +534,13 @@ jobs:
       - run:
           name: upload Dockerfile
           command: |
-            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 063909200012.dkr.ecr.us-east-1.amazonaws.com
+            ECR_PASSWORD=$(aws ecr get-login-password --region us-east-1)
+            docker login --username AWS --password "$ECR_PASSWORD"  $AWS_ECR_ENDPOINT
             
-            docker tag aws-devops-capstone:latest 063909200012.dkr.ecr.us-east-1.amazonaws.com/aws-devops-capstone:latest
+            docker tag aws-devops-capstone:latest $AWS_ECR_ENDPOINT/aws-devops-capstone:latest
             
             # Push image to a docker repository
-            docker push 063909200012.dkr.ecr.us-east-1.amazonaws.com/aws-devops-capstone:latest 
+            docker push $AWS_ECR_ENDPOINT/aws-devops-capstone:latest 
             
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
