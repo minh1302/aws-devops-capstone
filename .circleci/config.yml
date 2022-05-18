@@ -440,7 +440,7 @@ jobs:
           event: fail
           template: basic_fail_1
           
-  build-upload-docker:
+  build-and-upload-docker:
     docker:
       # Docker image here that supports Ansible     
       - image: docker:17.05.0-ce-git

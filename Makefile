@@ -90,3 +90,41 @@ docker-upload:
 	# Step 3:
 	# Push image to a docker repository
 	docker push "$dockerpath"
+	
+minikube-start:
+	# To start a local cluster, type the terminal command:
+
+	minikube start
+	
+	# After minikube starts, a cluster should be running locally. 
+	# You can check that you have one cluster running by typing kubectl config view 
+	# where you should see at least one cluster with a certificate-authority and server.
+	kubectl config view
+	
+minikube-deploy:
+	# This is your Docker ID/path
+	dockerpath=minh1302/aws-devops-capstone
+	
+	# Step 2
+	# Run the Docker Hub container with kubernetes
+	kubectl get nodes
+	kubectl create deploy aws-devops-capstone --image=minh1302/aws-devops-capstone
+	
+	# Step 3:
+	# List kubernetes pods
+	kubectl get deploy,rs,svc,pods
+	
+minikube-status:
+	kubectl get deploy,rs,svc,pods
+	
+minikube-forward:	
+	# Forward the container port to a host
+	kubectl port-forward deployment/aws-devops-capstone --address 0.0.0.0 3030:3030
+
+minikube-bash:
+	kubectl exec --stdin --tty deployment/aws-devops-capstone -- /bin/bash
+
+minikube-delete-pod:
+	kubectl delete deployment/aws-devops-capstone
+minikube-delete:
+	minikube delete
