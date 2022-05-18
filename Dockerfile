@@ -8,7 +8,7 @@ WORKDIR /app
 # Copy source code to working directory
 COPY . backend /app/
 
-WORKDIR "/app/backend"
+WORKDIR /app/backend
 
 # Install dependencies
 # hadolint ignore=DL3016
