@@ -452,8 +452,8 @@ jobs:
           name: install dependencies
           command: |
             apk add --update docker
-            apk add openrc
-            service docker start
+            # apk add openrc
+            # service docker start
             
             pip install --upgrade pip
             apk add --update curl
