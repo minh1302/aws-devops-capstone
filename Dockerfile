@@ -20,8 +20,8 @@ RUN npm install &&\
     npm install pm2 -g
 
 # Build backend
-# npm run lint &&\
-RUN npm run build
+RUN npm run lint &&\
+    npm run build
 
 # Expose port 3030
 EXPOSE 3030
