@@ -440,6 +440,56 @@ jobs:
           event: fail
           template: basic_fail_1
           
+  build-upload-docker:
+    docker:
+      # Docker image here that supports Ansible     
+      - image: docker:20.10.16-alpine3.15
+    steps:
+      # Checkout code from git
+      - checkout
+      
+      - run:
+          name: install dependencies
+          command: |
+            pip install --upgrade pip
+            apk add --update curl
+            pip3 install --no-cache-dir awscli
+            
+            # Install hadolint
+            wget -O /bin/hadolint "https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64" &&\
+            chmod +x /bin/hadolint 
+            
+      - run:
+          name: hadolint Dockerfile
+          command: |
+	          hadolint Dockerfile   
+      
+      - run:
+          name: build Dockerfile
+          command: |
+            docker build -t minh1302/aws-devops-capstone .  
+      
+      - run:
+          name: upload Dockerfile
+          command: |
+            dockerpath=minh1302/udacity-project-3
+            echo "Docker ID and Image: $dockerpath"
+            docker login -u=$DOCKER_USER -p=$DOCKER_PASSWORD
+            
+            # Push image to a docker repository
+            docker push "$dockerpath"  
+            
+      # - destroy-environment:
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
+
+      # - revert-migrations:
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+
+      # - slack/notify:
+      #     channel: general
+      #     event: fail
+      #     template: basic_fail_1 
+          
   deploy-backend:
     docker:
       # Docker image here that supports Ansible     
@@ -692,6 +742,12 @@ workflows:
       # - scan-backend:
       #     context: SLACK_APP
       #     requires: [build-backend]
+      build-upload-docker:
+          context: 
+            - SLACK_APP
+            - DOCKER_HUB
+          # requires: [scan-backend]
+      
       # - scan-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]

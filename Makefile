@@ -1,8 +1,4 @@
 ## The Makefile includes instructions on environment setup and lint tests
-# Create and activate a virtual environment
-# Install dependencies in requirements.txt
-# Dockerfile should pass hadolint
-# app.py should pass pylint
 
 # setup-hadolint:
 # 	sudo apt install linuxbrew-wrapper
@@ -16,18 +12,16 @@
 
 # setup-minikube:
 # 	brew install minikube
-setup:
-	# Create python virtualenv & source it
-	python3 -m venv ~/.devops
-	. ~/.devops/bin/activate
 	
 install:
 	# This should be run from inside a virtualenv
-	pip3 install --upgrade pip &&\
-		pip3 install -r requirements.txt
-	
-    wget -O /bin/hadolint "https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64" &&\
-    chmod +x /bin/hadolint
+	pip3 install --upgrade pip
+	sudo apt install nodejs npm
+	cd ./backend
+	sudo npm install -g n
+	sudo npm install pm2 -g
+	sudo wget -O /bin/hadolint "https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64" &&\
+	sudo chmod +x /bin/hadolint
 
 test:
 	# Additional, optional, tests could go here
@@ -38,8 +32,61 @@ lint:
 	# See local hadolint install instructions:   https://github.com/hadolint/hadolint
 	# This is linter for Dockerfiles
 	hadolint Dockerfile
-	# This is a linter for Python source code linter: https://www.pylint.org/
-	# This should be run from inside a virtualenv
-	pylint --disable=R,C,W1203,W1202 app.py
+	
+	# # lint frontend
+	# cd ./frontend
+	# npm install
+	# npm run lint
+	
+	# # lint backend
+	# cd ./backend
+	# npm install
+	# npm run lint
 
-all: install lint test
+build-backend:
+	cd ./backend
+	npm install
+	npm run lint
+	npm run build
+
+build-frontend:
+	cd ./frontend
+	npm install
+	npm run lint
+	npm run build
+
+build: build-backend build-frontend
+
+all: install lint build test
+
+docker-build:
+	# Build image and add a descriptive tag
+	docker build -t minh1302/aws-devops-capstone .
+
+docker-run:
+	# List docker images
+	docker image ls
+	
+	# Run backend
+	docker run -p 3030:3030 minh1302/aws-devops-capstone
+
+docker-run-it:
+	docker container run -it minh1302/aws-devops-capstone /bin/bash
+	# Remote backend to check backend status
+	# pm2 list
+	# pm2 logs npm
+	# sudo apt install net-tools
+	#  netstat -na | grep 3030
+
+docker-upload:
+	dockerpath=minh1302/aws-devops-capstone
+	
+	# Step 2:  
+	# Authenticate & tag
+    # docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
+	docker login
+	echo "Docker ID and Image: $dockerpath"
+	
+	# Step 3:
+	# Push image to a docker repository
+	docker push "$dockerpath"
