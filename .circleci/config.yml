@@ -452,8 +452,8 @@ jobs:
           name: install dependencies
           command: |
             apk update
-            apk install python3-pip
-            pip install --upgrade pip
+            apk add python3-pip
+            pip3 install --upgrade pip
             apk add --update curl
             pip3 install --no-cache-dir awscli
             
