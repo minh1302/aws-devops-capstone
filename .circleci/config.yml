@@ -841,6 +841,7 @@ workflows:
       #     requires: [run-migrations]
       - deploy-backend:
           context: SLACK_APP
+          # requires: [configure-infrastructure]
           # requires: [run-migrations]
       # - smoke-test:
       #     context: SLACK_APP
