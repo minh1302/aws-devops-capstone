@@ -71,7 +71,7 @@ docker-run:
 	docker run -p 3030:3030 minh1302/aws-devops-capstone
 
 docker-run-it:
-	docker container run -it minh1302/aws-devops-capstone /bin/bash
+	docker container run -it minh1302/aws-devops-capstone /bin/sh
 	# Remote backend to check backend status
 	# pm2 list
 	# pm2 logs npm

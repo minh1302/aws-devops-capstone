@@ -1,4 +1,4 @@
-FROM circleci/node:13.8.0
+FROM python:3.7-alpine3.11
 
 # hadolint ignore=DL3002
 USER root
@@ -11,14 +11,17 @@ COPY . backend /app/
 WORKDIR /app/backend
 
 # Install dependencies
+# hadolint ignore=DL3018,DL3013
+RUN pip install --no-cache-dir --upgrade pip &&\
+# hadolint ignore=DL3018
+    apk add --no-cache --update nodejs npm curl
 # hadolint ignore=DL3016
 RUN npm install &&\
-    npm run lint &&\
     npm install pm2 -g
 
 # Build backend
 RUN npm run lint &&\
-    run build
+    npm run build
 
 # Expose port 3030
 EXPOSE 3030
