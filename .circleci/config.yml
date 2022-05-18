@@ -443,7 +443,7 @@ jobs:
   build-upload-docker:
     docker:
       # Docker image here that supports Ansible     
-      - image: docker:20.10.16-alpine3.15
+      - image: circleci/docker-coreos-toolbox-ubuntu
     steps:
       # Checkout code from git
       - checkout
@@ -451,16 +451,12 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            apk update
+            sudo apt-get update
+            sudo apt-get install curl
             
-            docker -v
-            # addgroup -S docker su-exec
-            # adduser -S $(whoami) -G docker su-exec
-            service docker restart su-exec
-            
-            apk add --no-cache python3 py3-pip
+            sudo apt-get -y install python3-pip
             pip3 install --upgrade pip
-            apk add --update curl
+            pip3 --version
             pip3 install --no-cache-dir awscli
             
             # Install hadolint
