@@ -478,23 +478,23 @@ jobs:
       - run:
           name: upload Dockerfile
           command: |
-            dockerpath=minh1302/udacity-project-3
+            dockerpath=minh1302/aws-devops-capstone
             echo "Docker ID and Image: $dockerpath"
             docker login -u=$DOCKER_USER -p=$DOCKER_PASSWORD
             
             # Push image to a docker repository
             docker push "$dockerpath"  
             
-      # - destroy-environment:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
 
-      # - revert-migrations:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
-      # - slack/notify:
-      #     channel: general
-      #     event: fail
-      #     template: basic_fail_1 
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1 
           
   deploy-backend:
     docker:
