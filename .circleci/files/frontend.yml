@@ -1,5 +1,5 @@
 Description: >
-  UdaPeople frontend stack.
+  aws-devops-capstone frontend stack.
 
 Parameters:
   WorkflowID:
@@ -10,7 +10,7 @@ Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "udapeople-${WorkflowID}"
+      BucketName: !Sub "aws-devops-capstone-${WorkflowID}"
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
