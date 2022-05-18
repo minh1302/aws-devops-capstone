@@ -454,7 +454,7 @@ jobs:
             apk update
             
             docker -v
-            addgroup -S docker su-exec
+            # addgroup -S docker su-exec
             adduser -S $(whoami) -G docker su-exec
             service docker restart su-exec
             
