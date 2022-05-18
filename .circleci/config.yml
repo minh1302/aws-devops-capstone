@@ -443,7 +443,7 @@ jobs:
   build-upload-docker:
     docker:
       # Docker image here that supports Ansible     
-      - image: circleci/docker-coreos-toolbox-ubuntu
+      - image: circleci/docker-gc
     steps:
       # Checkout code from git
       - checkout
