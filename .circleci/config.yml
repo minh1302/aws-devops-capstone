@@ -462,8 +462,8 @@ jobs:
             chmod +x /bin/hadolint 
             
             docker -v
-            groupadd docker
-            usermod -aG docker $(whoami)
+            addgroup -S docker
+            adduser -S $(whoami) -G docker
             service docker restart
             
       - run:
