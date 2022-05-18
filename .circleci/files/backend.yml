@@ -1,5 +1,5 @@
 Description: >
-  UdaPeople backend stack.
+  aws-devops-capstone backend stack.
 
 Parameters:
   WorkflowID:
@@ -10,8 +10,8 @@ Resources:
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Sub UdaPeople-${WorkflowID}
-      GroupDescription: Allow port 22 and port 3030 for udapeople, 9100 for prometheus.
+      GroupName: !Sub aws-devops-capstone-${WorkflowID}
+      GroupDescription: Allow port 22 and port 3030 for aws-devops-capstone, 9100 for prometheus.
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
@@ -32,7 +32,7 @@ Resources:
       InstanceType: t2.micro
       SecurityGroups:
         - Ref: InstanceSecurityGroup
-      KeyName: udapeople
+      KeyName: aws-devops-capstone
       # If you use another key pair name, you should change this value to match.
       # If this ami id is not available for you, you can find another (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html)
       # Ubuntu 18 or higher works fine

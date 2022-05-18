@@ -5,17 +5,9 @@
   apt:
     upgrade: "yes"
 
-- name: "install dependencies."
-  become: true
-  apt:
-    name: ["nodejs", "npm"]
-    state: latest
-    update_cache: yes
 
-- name: "install pm2"
-  become: true
-  npm:
-    name: pm2
-    global: yes
-    production: yes
-    state: present
+# Install virtual box
+- import_tasks: install-virtual-box-full.yml
+
+# Install minikube
+- import_tasks: install-minikube.yml

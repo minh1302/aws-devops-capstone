@@ -1,53 +1,26 @@
 ---
-- name: "upgrade packages"
-  become: true
-  apt:
-    upgrade: "yes"    
 
-- name: "install dependencies"
-  become: true
-  apt:
-    name: ["nodejs", "npm"]
-    state: latest
-    update_cache: yes
-    
-- name: "install pm2"
-  become: true
-  npm:
-    name: pm2
-    global: yes
-    production: yes
-    state: present
-
-- name: create folders & install
+- name: minikube start
   become: yes
   shell: |
-    cd /home/{{ ansible_user }}
-    rm -rf   /home/{{ ansible_user }}/*
-
-    mkdir -p compressed
-    mkdir -p extracted
-
-- name: Copy files before extracting
-  copy:
-    src: "/tmp/artifact.tar.gz"
-    dest: "/home/{{ ansible_user }}/compressed/artifact.tar.gz"
-
-- name: Extract found files into destination
-  unarchive:
-    src: "/home/{{ ansible_user }}/compressed/artifact.tar.gz"
-    dest: "/home/{{ ansible_user }}/extracted/"
-    remote_src: yes
+    minikube start
+    kubectl config view
     
-- name: npm install
-  become: true
-  command: npm install
-  args:
-    chdir: /home/{{ ansible_user }}/extracted/backend
-
+- name: minikube deploy
+  become: yes
+  shell: |
+    dockerpath=minh1302/aws-devops-capstone
+    kubectl get nodes
+    kubectl create deploy aws-devops-capstone --image=minh1302/aws-devops-capstone
+    kubectl get deploy,rs,svc,pods
     
-- name: Use pm2 to run backend
-  become: true
-  command: pm2 start dist/main.js --name "npm" -i max
-  args:
-    chdir: /home/{{ ansible_user }}/extracted/backend
+- name: wait for pods to come up
+  become: yes
+  shell: kubectl get pods -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+    
+- name: minikube port forward
+  become: yes
+  shell: |
+    kubectl port-forward deployment/aws-devops-capstone --address 0.0.0.0 3030:3030

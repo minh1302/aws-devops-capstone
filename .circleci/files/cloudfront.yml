@@ -1,5 +1,5 @@
 Description: 
-  Cloudfront distribution for UdaPeople.
+  Cloudfront distribution for aws-devops-capstone.
 
 Parameters:
   WorkflowID:
@@ -20,7 +20,7 @@ Resources:
     Properties:
       DistributionConfig:
         Origins:
-          - DomainName: !Sub "udapeople-${WorkflowID}.s3.amazonaws.com"
+          - DomainName: !Sub "aws-devops-capstone-${WorkflowID}.s3.amazonaws.com"
             Id: webpage
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
