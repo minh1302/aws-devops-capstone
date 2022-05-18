@@ -804,7 +804,7 @@ workflows:
       # - scan-backend:
       #     context: SLACK_APP
       #     requires: [build-backend]
-      - build-and-upload-docker:
+      - build-and-upload-docker-eks:
           context: 
             - SLACK_APP
             - DOCKER_HUB
