@@ -748,7 +748,7 @@ workflows:
       # - scan-backend:
       #     context: SLACK_APP
       #     requires: [build-backend]
-      - build-upload-docker:
+      - build-and-upload-docker:
           context: 
             - SLACK_APP
             - DOCKER_HUB
