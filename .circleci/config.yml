@@ -462,6 +462,9 @@ jobs:
             chmod +x /bin/hadolint 
             
             docker -v
+            groupadd docker
+            usermod -aG docker $(whoami)
+            service docker restart
             
       - run:
           name: hadolint Dockerfile
