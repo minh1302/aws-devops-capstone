@@ -26,7 +26,4 @@ RUN npm run lint &&\
 # Expose port 3030
 EXPOSE 3030
 
-RUN pm2 startup &&\
-    pm2 start dist/main.js --name "npm" -i max &&\
-    pm2 save &&\
-    pm2 ls
+ENTRYPOINT ["pm2", "start", "dist/main.js", "--name", "npm", "-i", "max"]
