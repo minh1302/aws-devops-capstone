@@ -440,7 +440,7 @@ jobs:
           event: fail
           template: basic_fail_1
           
-  build-and-upload-docker:
+  build-and-upload-docker-hub:
     docker:
       # Docker image here that supports Ansible     
       - image: docker:17.05.0-ce-git
@@ -484,6 +484,62 @@ jobs:
             
             # Push image to a docker repository
             docker push "$dockerpath"  
+            
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
+
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1 
+          
+  build-and-upload-docker-eks:
+    docker:
+      # Docker image here that supports Ansible     
+      - image: docker:17.05.0-ce-git
+    steps:
+      # Checkout code from git
+      - checkout
+      - setup_remote_docker
+      
+      - run:
+          name: install dependencies
+          command: |
+            apk add --update py-pip
+              
+            pip install --upgrade pip
+            pip install awscli
+            
+            apk add --update curl
+            
+            # Install hadolint
+            apk add --update ca-certificates openssl && update-ca-certificates
+            
+            wget -O /bin/hadolint "https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64" &&\
+            chmod +x /bin/hadolint 
+            
+      - run:
+          name: hadolint Dockerfile
+          command: |
+            hadolint Dockerfile   
+      
+      - run:
+          name: build Dockerfile
+          command: |
+            docker build -t aws-devops-capstone .
+      
+      - run:
+          name: upload Dockerfile
+          command: |
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 063909200012.dkr.ecr.us-east-1.amazonaws.com
+            
+            docker tag aws-devops-capstone:latest 063909200012.dkr.ecr.us-east-1.amazonaws.com/aws-devops-capstone:latest
+            
+            # Push image to a docker repository
+            docker push 063909200012.dkr.ecr.us-east-1.amazonaws.com/aws-devops-capstone:latest 
             
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
