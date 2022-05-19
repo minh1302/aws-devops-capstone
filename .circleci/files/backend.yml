@@ -29,7 +29,7 @@ Resources:
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t3.micro
+      InstanceType: m5.large
       SecurityGroups:
         - Ref: InstanceSecurityGroup
       KeyName: udapeople

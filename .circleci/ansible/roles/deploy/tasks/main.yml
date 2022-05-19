@@ -23,6 +23,8 @@
   shell: kubectl get pods -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  register: wait_for_pods_to_come_up
+- debug: var=wait_for_pods_to_come_up.stdout_lines
     
 - name: minikube port forward
   become: yes

@@ -101,6 +101,6 @@
 - name: "install docker"
   become: true
   apt:
-    name: docker
+    name: docker.io
     state: latest
     update_cache: yes
