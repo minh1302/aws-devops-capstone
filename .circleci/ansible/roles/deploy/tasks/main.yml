@@ -35,5 +35,7 @@
 - name: minikube port forward
   become: true
   shell: kubectl port-forward deployment/aws-devops-capstone --address 0.0.0.0 3030:3030
+  async: 10  # it will timeout after ~30 seconds (approx)...
+  poll: 0  # default is 10 if not specified
   register: minikube_port_forward
 - debug: var=minikube_port_forward.stdout_lines
