@@ -5,9 +5,23 @@
   apt:
     upgrade: "yes"
 
-
-# Install virtual box
-- import_tasks: install-virtual-box-full.yml
-
-# Install minikube
-- import_tasks: install-minikube.yml
+- name: "install virtual-box"
+  become: true
+  apt:
+    name: virtualbox
+    state: latest
+    update_cache: yes
+    
+- name: "install brew"
+  become: true
+  apt:
+    name: linuxbrew-wrapper
+    state: latest
+    update_cache: yes
+    
+- name: "install minikube"
+  become: true
+  brew:
+    name: minikube
+    state: latest
+    update_cache: yes
