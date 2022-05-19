@@ -18,13 +18,14 @@
   register: minikube_deploy
 - debug: var=minikube_deploy.stdout_lines
     
-- name: wait for pods to come up
-  become: yes
-  shell: kubectl get pods -o json
-  register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
-  register: wait_for_pods_to_come_up
-- debug: var=wait_for_pods_to_come_up.stdout_lines
+- name: Wait for nodes to be ready
+  shell: "kubectl get nodes"
+  register: nodes
+  until:      
+    - '" Ready "  in nodes.stdout'      
+  retries: 6
+  delay: 2
+- debug: var=nodes.stdout_lines
     
 - name: minikube port forward
   become: yes

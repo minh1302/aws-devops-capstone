@@ -667,12 +667,15 @@ jobs:
             pip3 install --no-cache-dir awscli
             echo ${PWD}
 
-      - attach_workspace:
-          at: ~/
-
       - run:
           name: Get backend url
           command: |          
+          
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=aws-devops-capstone-backend-*" \
+              --output text > ~/BACKEND_IP.txt
+              
             export BACKEND_IP=$(cat ~/BACKEND_IP.txt)      
             echo "BACKEND_IP = ${BACKEND_IP}"
             export STATUS_URL="http://${BACKEND_IP}:3030/api/status"
@@ -869,15 +872,15 @@ workflows:
       # - scan-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]
-      - deploy-infrastructure:
-          context: SLACK_APP
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          context: SLACK_APP
-          requires: [deploy-infrastructure]
+      # - deploy-infrastructure:
+      #     context: SLACK_APP
+      #     # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
+      #     context: SLACK_APP
+      #     requires: [deploy-infrastructure]
       # - run-migrations:
       #     context: SLACK_APP
       #     requires: [configure-infrastructure]          
@@ -886,7 +889,7 @@ workflows:
       #     requires: [run-migrations]
       - deploy-backend:
           context: SLACK_APP
-          requires: [configure-infrastructure]
+          # requires: [configure-infrastructure]
           # requires: [run-migrations]
       - smoke-test-backend:
           context: SLACK_APP
