@@ -1,46 +1,59 @@
-[![minh1302](https://circleci.com/gh/minh1302/project-ml-microservice-kubernetes.svg?style=svg)](https://app.circleci.com/pipelines/github/minh1302/project-ml-microservice-kubernetes)
+[![minh1302](https://circleci.com/gh/minh1302/aws-devops-capstone.svg?style=svg)](https://app.circleci.com/pipelines/github/minh1302/aws-devops-capstone)
 
 ## Project Overview
 
-In this project, you will apply the skills you have acquired in this course to operationalize a Machine Learning Microservice API. 
+## Give your Application Auto-Deploy Superpowers
 
-You are given a pre-trained, `sklearn` model that has been trained to predict housing prices in Boston according to several features, 
-such as average rooms in a home and data about highway access, teacher-to-pupil ratios, and so on. 
-You can read more about the data, which was initially taken from Kaggle, 
-on [the data source site](https://www.kaggle.com/c/boston-housing). 
+In this project, you will prove your mastery of the following learning objectives:
 
-This project tests your ability to operationalize a Python flask app—in a provided file, 
-`app.py`—that serves out predictions (inference) about housing prices through API calls. 
+- Explain the fundamentals and benefits of CI/CD to achieve, build, and deploy automation for cloud-based software products.
+- Utilize Deployment Strategies to design and build CI/CD pipelines that support Continuous Delivery processes.
+- Utilize a configuration management tool to accomplish deployment to cloud-based servers.
+- Surface critical server errors for diagnosis using centralized structured logging.
 
-This project could be extended to any pre-trained machine learning model, 
-such as those for image recognition and data labeling.
+### Instructions
+
+* [Selling CI/CD](instructions/0-selling-cicd.md)
+* [Getting Started](instructions/1-getting-started.md)
+* [Deploying Working, Trustworthy Software](instructions/2-deploying-trustworthy-code.md)
+* [Configuration Management](instructions/3-configuration-management.md)
+* [Turn Errors into Sirens](instructions/4-turn-errors-into-sirens.md)
+
+### Built With
+
+- [Circle CI](www.circleci.com) - Cloud-based CI/CD service
+- [Amazon AWS](https://aws.amazon.com/) - Cloud services
+- [AWS CLI](https://aws.amazon.com/cli/) - Command-line tool for AWS
+- [CloudFormation](https://aws.amazon.com/cloudformation/) - Infrastrcuture as code
+- [Ansible](https://www.ansible.com/) - Configuration management tool
+- [Prometheus](https://prometheus.io/) - Monitoring tool
 
 
 This project will apply the skills and knowledge of AWS Cloud DevOps . These include:
 
-Working in AWS
-Using Circle CI to implement Continuous Integration and Continuous Deployment
-Building pipelines
-Working with Ansible and CloudFormation to deploy clusters
-Building Kubernetes clusters
-Building Docker containers in pipelines
+- Working in AWS
+- Using Circle CI to implement Continuous Integration and Continuous Deployment
+- Building pipelines
+- Working with Ansible and CloudFormation to deploy clusters
+- Building Kubernetes clusters
+- Building Docker containers in pipelines
 
 
 Continuous Deployment will include:
 
-Pushing the built Docker container(s) to the Docker repository (AWS ECR, create custom Registry within cluster) ; 
-and
-Deploying these Docker container(s) to a small Kubernetes cluster (AWS Kubernetes as a Service). 
-To deploy your Kubernetes cluster, use either Ansible / Cloudformation. 
+- Pushing the built Docker container(s) to the Docker repository (AWS ECR, create custom Registry within cluster) ; 
+- and
+- Deploying these Docker container(s) to a small Kubernetes cluster (AWS Kubernetes as a Service). 
+- To deploy your Kubernetes cluster, use either Ansible / Cloudformation. 
 
 Run Continuous Deployment from Circle CI as an independent pipeline.
 
 ### Project Goal
 
-The Project goal is to operationalize this working, 
+- The Project goal is to operationalize this working, 
 machine learning microservice using [kubernetes](https://kubernetes.io/), 
 
-which is an open-source system for automating the management of containerized applications. 
+- which is an open-source system for automating the management of containerized applications. 
 
 In this project I will:
 * Test  project code using linting

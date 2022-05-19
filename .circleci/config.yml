@@ -252,17 +252,17 @@ jobs:
       - destroy-backend-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-      # - run:
-      #     name: Ensure front-end infrastructure exist
-      #     command: |
-      #       aws cloudformation deploy \
-      #         --template-file .circleci/files/frontend.yml \
-      #         --stack-name "aws-devops-capstone-prontend-${CIRCLE_WORKFLOW_ID:0:7}" \
-      #         --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"  \
-      #         --tags project=aws-devops-capstone
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              --stack-name "aws-devops-capstone-prontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+              --tags project=aws-devops-capstone
 
-      # - destroy-frontend-environment:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-frontend-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - run:
           name: Add back-end ip to ansible inventory
@@ -578,13 +578,9 @@ jobs:
           name: Get backend IP & create inventory.txt
           command: |   
             echo "[web]" > ~/inventory.txt
-            # aws ec2 describe-instances \
-            #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            #   --filters "Name=tag:Name,Values=aws-devops-capstone-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-            #   --output text >> ~/inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=aws-devops-capstone-backend-*" \
+              --filters "Name=tag:Name,Values=aws-devops-capstone-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text >> ~/inventory.txt
 
       - run:
@@ -604,12 +600,11 @@ jobs:
       #  netstat -na | grep 3030
       
       # Here's where you will add some code to rollback on failure   
-######### TODO
-      # - destroy-environment:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
 
-      # - revert-migrations:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - slack/notify:
           channel: general
@@ -673,7 +668,7 @@ jobs:
           
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=aws-devops-capstone-backend-*" \
+              --filters "Name=tag:Name,Values=aws-devops-capstone-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text > ~/BACKEND_IP.txt
               
             export BACKEND_IP=$(cat ~/BACKEND_IP.txt)      
@@ -699,12 +694,11 @@ jobs:
             fi
 
       # Here's where you will add some code to rollback on failure  
-      ################# TODO
-      # - destroy-environment:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
 
-      # - revert-migrations:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - slack/notify:
           channel: general
@@ -768,10 +762,9 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
-            # Change the initial stack name, as applicable to you
             aws cloudformation deploy \
                     --template-file .circleci/files/cloudfront.yml \
-                    --stack-name InitialStack \
+                    --stack-name aws-devops-capstone-cloudfront \
                     --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
                     --tags project=aws-devops-capstone
       # Here's where you will add some code to rollback on failure  
@@ -786,7 +779,7 @@ jobs:
           event: fail
           template: basic_fail_1 
 
-  cleanup:
+  cleanup-old-resource:
     docker:
       # Docker image here
     - image: amazon/aws-cli
@@ -851,56 +844,54 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend:
-      #     context: SLACK_APP
-      # - build-backend:
-      #     context: SLACK_APP
-      # - test-frontend:
-      #     context: SLACK_APP
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     context: SLACK_APP
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     context: SLACK_APP
-      #     requires: [build-backend]
-      # - build-and-upload-docker-hub:
-      #     context: 
-      #       - SLACK_APP
-      #       - DOCKER_HUB
-          # requires: [scan-backend]
-      # - scan-frontend:
-      #     context: SLACK_APP
-      #     requires: [build-frontend]
+      - build-frontend:
+          context: SLACK_APP
+      - build-backend:
+          context: SLACK_APP
+      - test-frontend:
+          context: SLACK_APP
+          requires: [build-frontend]
+      - test-backend:
+          context: SLACK_APP
+          requires: [build-backend]
+      - scan-backend:
+          context: SLACK_APP
+          requires: [build-backend]
+      - build-and-upload-docker-hub:
+          context: 
+            - SLACK_APP
+            - DOCKER_HUB
+          requires: [scan-backend]
+      - scan-frontend:
+          context: SLACK_APP
+          requires: [build-frontend]
       - deploy-infrastructure:
           context: SLACK_APP
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [master]
       - configure-infrastructure:
           context: SLACK_APP
           requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     context: SLACK_APP
-      #     requires: [configure-infrastructure]          
-      # - deploy-frontend:
-      #     context: SLACK_APP
-      #     requires: [run-migrations]
+      - run-migrations:
+          context: SLACK_APP
+          requires: [configure-infrastructure]          
+      - deploy-frontend:
+          context: SLACK_APP
+          requires: [run-migrations]
       - deploy-backend:
           context: SLACK_APP
-          requires: [configure-infrastructure]
-          # requires: [run-migrations]
+          requires: [run-migrations]
       - smoke-test-backend:
           context: SLACK_APP
           requires: [deploy-backend]
-      # - smoke-test-frontend:
-      #     context: SLACK_APP
-      #     requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     context: SLACK_APP
-      #     requires: [smoke-test-backend,smoke-test-frontend]          
-      # - cleanup:
-      #     context: SLACK_APP
-      #     requires: [smoke-test-backend,smoke-test-frontend]
-      #     requires: [cloudfront-update]
+      - smoke-test-frontend:
+          context: SLACK_APP
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          context: SLACK_APP
+          requires: [smoke-test-backend,smoke-test-frontend]          
+      - cleanup-old-resource:
+          context: SLACK_APP
+          requires: [cloudfront-update]
