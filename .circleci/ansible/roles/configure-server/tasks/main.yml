@@ -12,18 +12,6 @@
     state: latest
     update_cache: yes
     
-- name: get kubectl url
-  become: true
-  shell: echo https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-  register: kubectl_url  
-    
-- name: Download kubectl
-  become: true
-  get_url: 
-    url: "{{ kubectl_url.stdout }}"
-    dest: /tmp/
-    mode: '0777'   
-    
 - name: "install apt-transport-https"
   become: true
   apt:
@@ -62,7 +50,21 @@
   file: 
     path: /tmp/minikube-linux-amd64
     state: absent
-
+    
+- name: get kubectl url
+  become: true
+  shell: echo https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+  register: kubectl_url  
+- debug: var=kubectl_url.stdout_lines
+    
+- name: Download kubectl
+  become: true
+  get_url: 
+    url: "{{ kubectl_url.stdout }}"
+    dest: /tmp/
+    mode: '0777'   
+    register: download_kubectl  
+- debug: var=download_kubectl.stdout_lines
 
 - name: Copy /tmp/kubectl to /usr/local/bin/kubectl
   become: true
@@ -74,7 +76,9 @@
     
 - name: "get kubectl version"
   become: true
-  shell: kubectl version -o json
+  shell: kubectl version
+  register: kubectl_version  
+- debug: var=kubectl_version.stdout_lines
 
 - name: Remove /tmp/kubectl
   become: true
