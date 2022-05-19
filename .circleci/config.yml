@@ -252,17 +252,17 @@ jobs:
       - destroy-backend-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-      - run:
-          name: Ensure front-end infrastructure exist
-          command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/frontend.yml \
-              --stack-name "aws-devops-capstone-prontend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"  \
-              --tags project=aws-devops-capstone
+      # - run:
+      #     name: Ensure front-end infrastructure exist
+      #     command: |
+      #       aws cloudformation deploy \
+      #         --template-file .circleci/files/frontend.yml \
+      #         --stack-name "aws-devops-capstone-prontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+      #         --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+      #         --tags project=aws-devops-capstone
 
-      - destroy-frontend-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      # - destroy-frontend-environment:
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - run:
           name: Add back-end ip to ansible inventory

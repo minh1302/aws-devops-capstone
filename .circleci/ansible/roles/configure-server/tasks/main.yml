@@ -20,8 +20,4 @@
     update_cache: yes
     
 - name: "install minikube"
-  become: true
-  brew:
-    name: minikube
-    state: latest
-    update_cache: yes
+  shell: brew install minikube
