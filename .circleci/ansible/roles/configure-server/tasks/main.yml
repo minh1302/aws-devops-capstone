@@ -12,6 +12,28 @@
     state: latest
     update_cache: yes
     
+# ------------ Install conntrack
+- name: "install conntrack"
+  become: true
+  apt:
+    name: conntrack
+    state: latest
+    update_cache: yes
+    
+# ------------ Install docker
+- name: "install docker"
+  become: true
+  apt:
+    name: docker
+    state: latest
+    update_cache: yes
+    
+- name: get docker version
+  become: yes
+  shell: docker version
+  register: dockerversion
+- debug: var=dockerversion.stdout_lines
+    
 - name: "install apt-transport-https"
   become: true
   apt:
@@ -89,18 +111,3 @@
     path: /tmp/kubectl
     state: absent
     
-# # ------------ Install conntrack
-# - name: "install conntrack"
-#   become: true
-#   apt:
-#     name: conntrack
-#     state: latest
-#     update_cache: yes
-    
-# # ------------ Install docker
-# - name: "install docker"
-#   become: true
-#   apt:
-#     name: docker.io
-#     state: latest
-#     update_cache: yes

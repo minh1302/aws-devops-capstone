@@ -872,15 +872,15 @@ workflows:
       # - scan-frontend:
       #     context: SLACK_APP
       #     requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     context: SLACK_APP
-      #     # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [master]
-      # - configure-infrastructure:
-      #     context: SLACK_APP
-      #     requires: [deploy-infrastructure]
+      - deploy-infrastructure:
+          context: SLACK_APP
+          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          context: SLACK_APP
+          requires: [deploy-infrastructure]
       # - run-migrations:
       #     context: SLACK_APP
       #     requires: [configure-infrastructure]          
@@ -889,7 +889,7 @@ workflows:
       #     requires: [run-migrations]
       - deploy-backend:
           context: SLACK_APP
-          # requires: [configure-infrastructure]
+          requires: [configure-infrastructure]
           # requires: [run-migrations]
       - smoke-test-backend:
           context: SLACK_APP
