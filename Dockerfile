@@ -1,5 +1,5 @@
 FROM python:3.7-alpine3.11
-aaa
+
 # hadolint ignore=DL3002
 USER root
 # Create a working directory

@@ -857,10 +857,10 @@ workflows:
       # - scan-backend:
       #     context: SLACK_APP
       #     requires: [build-backend]
-      - build-and-upload-docker-hub:
-          context: 
-            - SLACK_APP
-            - DOCKER_HUB
+      # - build-and-upload-docker-hub:
+      #     context: 
+      #       - SLACK_APP
+      #       - DOCKER_HUB
       #     requires: [scan-backend]
       #     filters:
       #       branches:
