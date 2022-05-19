@@ -4,6 +4,20 @@
   become: true
   apt:
     upgrade: "yes"
+    
+- name: "install curl"
+  become: true
+  apt:
+    name: curl
+    state: latest
+    update_cache: yes
+    
+- name: "install apt-transport-https"
+  become: true
+  apt:
+    name: apt-transport-https
+    state: latest
+    update_cache: yes
 
 - name: "install virtual-box"
   become: true
@@ -12,21 +26,18 @@
     state: latest
     update_cache: yes
     
-- name: "install virtual-box"
-  become: true
-  apt:
-    name: git
-    state: latest
-    update_cache: yes
-    
-- name: "install brew"
-  become: true
-  shell: |
-    git clone https://github.com/Homebrew/linuxbrew.git ~/.linuxbrew
-    export PATH="$HOME/.linuxbrew/bin:$PATH"
-    export MANPATH="$HOME/.linuxbrew/share/man:$MANPATH"
-    export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
-    
 - name: "install minikube"
   become: true
-  shell: brew install minikube
+  shell: |
+    wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    cp minikube-linux-amd64 /usr/local/bin/minikube
+    chmod 755 /usr/local/bin/minikube
+    minikube version
+    
+- name: "install Kubectl"
+  become: true
+  shell: |
+    curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+    chmod +x ./kubectl
+    mv ./kubectl /usr/local/bin/kubectl
+    kubectl version -o json
