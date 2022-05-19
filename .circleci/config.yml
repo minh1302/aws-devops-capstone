@@ -879,7 +879,7 @@ workflows:
           # requires: [run-migrations]
       - smoke-test-backend:
           context: SLACK_APP
-      #     requires: [deploy-backend, deploy-frontend]
+          requires: [deploy-backend]
       # - smoke-test-frontend:
       #     context: SLACK_APP
       #     requires: [deploy-backend, deploy-frontend]
