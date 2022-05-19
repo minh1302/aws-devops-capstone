@@ -74,11 +74,11 @@
     remote_src: yes
     mode: '0777'
     
-- name: "get kubectl version"
+- name: "get kubectl help"
   become: true
-  shell: kubectl version
-  register: kubectl_version  
-- debug: var=kubectl_version.stdout_lines
+  shell: kubectl --help
+  register: kubectl_help  
+- debug: var=kubectl_help.stdout_lines
 
 - name: Remove /tmp/kubectl
   become: true
