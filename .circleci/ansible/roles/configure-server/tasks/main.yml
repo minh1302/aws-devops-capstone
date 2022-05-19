@@ -25,12 +25,25 @@
     name: virtualbox
     state: latest
     update_cache: yes
+
+- name: Download minikube installer
+  get_url: 
+    url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+- name: Extract found files into destination
+  copy:
+    src: "/tmp/minikube-linux-amd64"
+    dest: "/usr/local/bin/minikube"
+    remote_src: yes
+
+- name: Remove the minikube-linux-amd64
+  file: 
+    path: /tmp/minikube-linux-amd64
+    state: absent
     
-- name: "install minikube"
+- name: "chmod & get minikube version"
   become: true
   shell: |
-    wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-    cp minikube-linux-amd64 /usr/local/bin/minikube
     chmod 755 /usr/local/bin/minikube
     minikube version
     
