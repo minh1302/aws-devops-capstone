@@ -575,9 +575,19 @@ jobs:
             pip3 install --no-cache-dir awscli
 
       - run:
+          name: Get backend IP & create inventory.txt
+          command: |   
+            echo "[web]" > ~/inventory.txt
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=aws-devops-capstone-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text >> ~/inventory.txt
+
+      - run:
           name: Deploy backend
           command: |        
-            node -v    
+            node -v   
+            
             echo "Contents  of the ~/inventory.txt file is -------"
             cat ~/inventory.txt
 
