@@ -691,6 +691,7 @@ jobs:
                 return 0
             else
                 echo "test ${STATUS_URL} FAIL"
+                curl "${STATUS_URL}"
                 return 1
             fi
 
