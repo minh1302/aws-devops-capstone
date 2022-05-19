@@ -642,7 +642,7 @@ jobs:
           template: basic_fail_1 
 
 
-  smoke-test:
+  smoke-test-backend:
     docker:
       # Lightweight Docker image 
       - image: python:3.7-alpine3.11
@@ -684,6 +684,34 @@ jobs:
                 echo "test ${STATUS_URL} FAIL"
                 return 1
             fi
+
+      # Here's where you will add some code to rollback on failure   
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+
+      - slack/notify:
+          channel: general
+          event: fail
+          template: basic_fail_1 
+          
+  smoke-test-frontend:
+    docker:
+      # Lightweight Docker image 
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+
+      # Install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update curl
+            pip3 install --no-cache-dir awscli
+            echo ${PWD}
 
       - run:
           name: Frontend smoke test.
@@ -849,12 +877,16 @@ workflows:
           context: SLACK_APP
           requires: [configure-infrastructure]
           # requires: [run-migrations]
-      # - smoke-test:
+      - smoke-test-backend:
+          context: SLACK_APP
+      #     requires: [deploy-backend, deploy-frontend]
+      # - smoke-test-frontend:
       #     context: SLACK_APP
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     context: SLACK_APP
-      #     requires: [smoke-test]          
+      #     requires: [smoke-test-backend,smoke-test-frontend]          
       # - cleanup:
       #     context: SLACK_APP
+      #     requires: [smoke-test-backend,smoke-test-frontend]
       #     requires: [cloudfront-update]
