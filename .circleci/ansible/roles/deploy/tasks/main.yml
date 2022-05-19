@@ -5,6 +5,8 @@
   shell: |
     minikube start
     kubectl config view
+  register: minikube_start
+- debug: var=minikube_start.stdout_lines
     
 - name: minikube deploy
   become: yes
@@ -13,6 +15,8 @@
     kubectl get nodes
     kubectl create deploy aws-devops-capstone --image=minh1302/aws-devops-capstone
     kubectl get deploy,rs,svc,pods
+  register: minikube_deploy
+- debug: var=minikube_deploy.stdout_lines
     
 - name: wait for pods to come up
   become: yes
@@ -22,5 +26,6 @@
     
 - name: minikube port forward
   become: yes
-  shell: |
-    kubectl port-forward deployment/aws-devops-capstone --address 0.0.0.0 3030:3030
+  shell: kubectl port-forward deployment/aws-devops-capstone --address 0.0.0.0 3030:3030
+  register: minikube_port_forward
+- debug: var=minikube_port_forward.stdout_lines

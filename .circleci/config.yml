@@ -578,9 +578,13 @@ jobs:
           name: Get backend IP & create inventory.txt
           command: |   
             echo "[web]" > ~/inventory.txt
+            # aws ec2 describe-instances \
+            #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            #   --filters "Name=tag:Name,Values=aws-devops-capstone-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            #   --output text >> ~/inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=aws-devops-capstone-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --filters "Name=tag:Name,Values=aws-devops-capstone-backend" \
               --output text >> ~/inventory.txt
 
       - run:
@@ -600,17 +604,12 @@ jobs:
       #  netstat -na | grep 3030
       
       # Here's where you will add some code to rollback on failure   
+######### TODO
+      # - destroy-environment:
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
 
-      - run:
-          name: simulate failed
-          command: |        
-            exit 1
-            
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
-
-      - revert-migrations:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      # - revert-migrations:
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - slack/notify:
           channel: general
