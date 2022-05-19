@@ -862,6 +862,9 @@ workflows:
             - SLACK_APP
             - DOCKER_HUB
           requires: [scan-backend]
+          filters:
+            branches:
+              only: [master]
       - scan-frontend:
           context: SLACK_APP
           requires: [build-frontend]
