@@ -5,10 +5,19 @@
   apt:
     upgrade: "yes"
     
+# ------------ Install curl
 - name: "install curl"
   become: true
   apt:
     name: curl
+    state: latest
+    update_cache: yes
+    
+# ------------ Install socat
+- name: "install conntrack"
+  become: true
+  apt:
+    name: socat
     state: latest
     update_cache: yes
     
@@ -42,14 +51,6 @@
     state: latest
     update_cache: true
     
-# - name: "install docker"
-#   become: true
-#   apt:
-#     name: docker
-#     state: latest
-#     update_cache: yes
-#   register: install_docker
-# - debug: var=install_docker.stdout_lines
 - name: Add Docker GPG apt Key
   become: true
   apt_key:
@@ -86,15 +87,7 @@
     name: apt-transport-https
     state: latest
     update_cache: yes
-
-# # Install virtual box
-# - name: "install virtual-box"
-#   become: true
-#   apt:
-#     name: virtualbox
-#     state: latest
-#     update_cache: yes
-
+    
 # ------------ Install minikube
 - name: Download minikube installer
   become: true
