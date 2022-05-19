@@ -22,3 +22,17 @@
 #   file:
 #     path: /tmp/starship-installer.sh
 #     state: absent
+
+    #  - name: checking raid status 
+    #   shell: "cat /proc/mdstat | grep 'F' | cut -d' ' -f6 | cut -d'[' -f1" 
+    #   register: "array_check"
+
+    #  - debug:
+    #     msg: "{{ array_check.stdout_lines }}"
+
+    #  - name: checking the samrtctl logs for the drive 
+    #   shell: "/usr/sbin/smartctl -H /dev/{{ item }} | tail -2|awk -F' ' '{print $6}'"
+    #   with_items:
+    #      - "nvme0"
+    #      - "nvme1"
+    #   register: "smartctl_status"
