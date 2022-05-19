@@ -20,7 +20,9 @@
 - name: Download kubectl
   become: true
   get_url: 
-    url: "{{ kubectl_url.stdout }}""
+    url: "{{ item }}"
+    with_items:
+      - "{{ kubectl_url.stdout }}"
     dest: /tmp/
     mode: '0777'   
     
