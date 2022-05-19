@@ -27,25 +27,29 @@
     update_cache: yes
 
 - name: Download minikube installer
+  become: true
   get_url: 
     url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    dest: /tmp/
+    mode: '0777'
 
-- name: Extract found files into destination
+- name: Copy /tmp/minikube-linux-amd64 to /usr/local/bin/minikube
+  become: true
   copy:
     src: "/tmp/minikube-linux-amd64"
     dest: "/usr/local/bin/minikube"
     remote_src: yes
+    mode: '0777'
 
+- name: "get minikube version"
+  become: true
+  shell: minikube version
+  
 - name: Remove the minikube-linux-amd64
+  become: true
   file: 
     path: /tmp/minikube-linux-amd64
     state: absent
-    
-- name: "chmod & get minikube version"
-  become: true
-  shell: |
-    chmod 755 /usr/local/bin/minikube
-    minikube version
     
 - name: "install Kubectl"
   become: true
