@@ -8,27 +8,32 @@
   register: minikube_start
 - debug: var=minikube_start.stdout_lines
     
-- name: minikube deploy
+- name: minikube get nodes
   become: yes
   shell: |
-    dockerpath=minh1302/aws-devops-capstone
     kubectl get nodes
+  register: get_nodes
+- debug: var=get_nodes.stdout_lines
+    
+- name: minikube deploy
+  become: true
+  shell: |
     kubectl create deploy aws-devops-capstone --image=minh1302/aws-devops-capstone
-    kubectl get deploy,rs,svc,pods
   register: minikube_deploy
 - debug: var=minikube_deploy.stdout_lines
     
-- name: Wait for nodes to be ready
-  shell: "kubectl get nodes"
-  register: nodes
+- name: Wait for pods to be ready
+  become: true
+  shell: "kubectl get pods"
+  register: pods
   until:      
-    - '" Ready "  in nodes.stdout'      
+    - '" Running "  in pods.stdout'      
   retries: 50
   delay: 5
-- debug: var=nodes.stdout_lines
+- debug: var=pods.stdout_lines
     
 - name: minikube port forward
-  become: yes
+  become: true
   shell: kubectl port-forward deployment/aws-devops-capstone --address 0.0.0.0 3030:3030
   register: minikube_port_forward
 - debug: var=minikube_port_forward.stdout_lines
