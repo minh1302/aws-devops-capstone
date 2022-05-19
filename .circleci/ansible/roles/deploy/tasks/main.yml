@@ -3,7 +3,7 @@
 - name: minikube start
   become: yes
   shell: |
-    minikube start --driver=none
+    minikube start
     kubectl config view
   register: minikube_start
 - debug: var=minikube_start.stdout_lines

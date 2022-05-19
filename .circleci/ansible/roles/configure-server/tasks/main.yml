@@ -20,12 +20,12 @@
     update_cache: yes
 
 # Install virtual box
-# - name: "install virtual-box"
-#   become: true
-#   apt:
-#     name: virtualbox
-#     state: latest
-#     update_cache: yes
+- name: "install virtual-box"
+  become: true
+  apt:
+    name: virtualbox
+    state: latest
+    update_cache: yes
 
 # ------------ Install minikube
 - name: Download minikube installer
@@ -89,18 +89,18 @@
     path: /tmp/kubectl
     state: absent
     
-# ------------ Install conntrack
-- name: "install conntrack"
-  become: true
-  apt:
-    name: conntrack
-    state: latest
-    update_cache: yes
+# # ------------ Install conntrack
+# - name: "install conntrack"
+#   become: true
+#   apt:
+#     name: conntrack
+#     state: latest
+#     update_cache: yes
     
-# ------------ Install docker
-- name: "install docker"
-  become: true
-  apt:
-    name: docker.io
-    state: latest
-    update_cache: yes
+# # ------------ Install docker
+# - name: "install docker"
+#   become: true
+#   apt:
+#     name: docker.io
+#     state: latest
+#     update_cache: yes
