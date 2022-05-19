@@ -12,12 +12,21 @@
     state: latest
     update_cache: yes
     
-- name: "install brew"
+- name: "install virtual-box"
   become: true
   apt:
-    name: linuxbrew-wrapper
+    name: git
     state: latest
     update_cache: yes
     
+- name: "install brew"
+  become: true
+  shell: |
+    git clone https://github.com/Homebrew/linuxbrew.git ~/.linuxbrew
+    export PATH="$HOME/.linuxbrew/bin:$PATH"
+    export MANPATH="$HOME/.linuxbrew/share/man:$MANPATH"
+    export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
+    
 - name: "install minikube"
+  become: true
   shell: brew install minikube
