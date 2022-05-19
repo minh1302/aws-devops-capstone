@@ -63,7 +63,7 @@
     url: "{{ kubectl_url.stdout }}"
     dest: /tmp/
     mode: '0777'   
-    register: download_kubectl  
+  register: download_kubectl  
 - debug: var=download_kubectl.stdout_lines
 
 - name: Copy /tmp/kubectl to /usr/local/bin/kubectl
