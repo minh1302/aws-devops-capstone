@@ -87,13 +87,13 @@
     state: latest
     update_cache: yes
 
-# Install virtual box
-- name: "install virtual-box"
-  become: true
-  apt:
-    name: virtualbox
-    state: latest
-    update_cache: yes
+# # Install virtual box
+# - name: "install virtual-box"
+#   become: true
+#   apt:
+#     name: virtualbox
+#     state: latest
+#     update_cache: yes
 
 # ------------ Install minikube
 - name: Download minikube installer
