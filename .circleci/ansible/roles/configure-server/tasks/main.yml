@@ -12,10 +12,15 @@
     state: latest
     update_cache: yes
     
+- name: get kubectl url
+  become: true
+  shell: echo https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+  register: kubectl_url  
+    
 - name: Download kubectl
   become: true
   get_url: 
-    url: https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+    url: "{{ kubectl_url.stdout_lines }}"
     dest: /tmp/
     mode: '0777'   
     
