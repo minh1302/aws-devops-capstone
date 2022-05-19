@@ -21,15 +21,61 @@
     update_cache: yes
     
 # ------------ Install docker
-- name: "install docker"
+- name: Install aptitude
   become: true
   apt:
-    name: docker
+    name: aptitude
     state: latest
-    update_cache: yes
+    update_cache: true
+
+- name: Install required system packages
+  become: true
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+    state: latest
+    update_cache: true
     
+# - name: "install docker"
+#   become: true
+#   apt:
+#     name: docker
+#     state: latest
+#     update_cache: yes
+#   register: install_docker
+# - debug: var=install_docker.stdout_lines
+- name: Add Docker GPG apt Key
+  become: true
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  become: true
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt and install docker-ce
+  become: true
+  apt:
+    name: docker-ce
+    state: latest
+    update_cache: true
+
+- name: Install Docker Module for Python
+  become: true
+  pip:
+    name: docker
+        
 - name: get docker version
-  become: yes
+  become: true
   shell: docker version
   register: dockerversion
 - debug: var=dockerversion.stdout_lines
