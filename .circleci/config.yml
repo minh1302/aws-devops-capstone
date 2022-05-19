@@ -70,7 +70,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure  https://kvdb.io/FzagTM3HAdPC1rPAVeV6Uj/migration_<< parameters.workflow_id >>)
+            SUCCESS=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/migration_<< parameters.workflow_id >>)
             # Logic for reverting the database state
             if (( $SUCCESS == 1 ));
             then
@@ -357,12 +357,12 @@ jobs:
       # Send migration status to kvdb.io
       - run:
           name: Send migration status to kvdb.io
-          # If you are using kvdb.io, generate the bucket ID "FzagTM3HAdPC1rPAVeV6Uj" in your local terminal first
+          # If you are using kvdb.io, generate the bucket ID "Y2wgZLY8miMzxFRtpP8iEb" in your local terminal first
           command: |   
             if grep -q "has been executed successfully." ~/migrations_dump.txt
             then
-              curl "https://kvdb.io/FzagTM3HAdPC1rPAVeV6Uj/migration_${CIRCLE_WORKFLOW_ID:0:7}"  -d '1'
-              curl --insecure "https://kvdb.io/FzagTM3HAdPC1rPAVeV6Uj/migration_${CIRCLE_WORKFLOW_ID:0:7}"
+              curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/migration_${CIRCLE_WORKFLOW_ID:0:7}"  -d '1'
+              curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/migration_${CIRCLE_WORKFLOW_ID:0:7}"
             fi
 
      # Here's where you will add some code to rollback on failure   
@@ -425,8 +425,8 @@ jobs:
             URL="http://aws-devops-capstone-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"     
             echo ${URL} 
             sudo echo "insecure" >> ~/.curlrc
-            curl "https://kvdb.io/FzagTM3HAdPC1rPAVeV6Uj/udacity_url"  -d "${URL}"
-            curl --insecure "https://kvdb.io/FzagTM3HAdPC1rPAVeV6Uj/udacity_url"
+            curl "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/aws_devops_capstone_url"  -d "${URL}"
+            curl --insecure "https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/aws_devops_capstone_url"
 
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
@@ -724,7 +724,7 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-            URL=$(curl --insecure  https://kvdb.io/FzagTM3HAdPC1rPAVeV6Uj/udacity_url) 
+            URL=$(curl --insecure  https://kvdb.io/Y2wgZLY8miMzxFRtpP8iEb/aws_devops_capstone_url) 
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
