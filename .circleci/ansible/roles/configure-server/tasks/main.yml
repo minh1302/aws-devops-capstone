@@ -19,13 +19,15 @@
     state: latest
     update_cache: yes
 
-- name: "install virtual-box"
-  become: true
-  apt:
-    name: virtualbox
-    state: latest
-    update_cache: yes
+# Install virtual box
+# - name: "install virtual-box"
+#   become: true
+#   apt:
+#     name: virtualbox
+#     state: latest
+#     update_cache: yes
 
+# ------------ Install minikube
 - name: Download minikube installer
   become: true
   get_url: 
@@ -51,6 +53,7 @@
     path: /tmp/minikube-linux-amd64
     state: absent
     
+# ------------ Install kubectl
 - name: get kubectl url
   become: true
   shell: echo https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
@@ -85,3 +88,19 @@
   file: 
     path: /tmp/kubectl
     state: absent
+    
+# ------------ Install conntrack
+- name: "install conntrack"
+  become: true
+  apt:
+    name: conntrack
+    state: latest
+    update_cache: yes
+    
+# ------------ Install docker
+- name: "install docker"
+  become: true
+  apt:
+    name: docker
+    state: latest
+    update_cache: yes
