@@ -8,12 +8,12 @@
   register: minikube_start
 - debug: var=minikube_start.stdout_lines
     
-# - name: minikube get nodes
-#   become: yes
-#   shell: |
-#     kubectl get nodes
-#   register: get_nodes
-# - debug: var=get_nodes.stdout_lines
+- name: minikube get nodes
+  become: yes
+  shell: |
+    kubectl get nodes
+  register: get_nodes
+- debug: var=get_nodes.stdout_lines
     
 - name: minikube deploy
   become: true
